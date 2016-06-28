@@ -301,8 +301,7 @@ module ActiveRecord
       elsif value.is_a?(Date) || value.is_a?(Time)
         %("#{value.to_s(:db)}")
       elsif value.is_a?(Array) && value.size > 10
-        inspected = value.first(10).inspect
-        %(#{inspected[0...-1]}, ...])
+        %([#{value.size} elements...])
       else
         value.inspect
       end

@@ -1,3 +1,8 @@
+*   Do not inspect contents of associated arrays containing more than 10
+    elements, preventing `inspect` from looping infinitely in some cases.
+
+    *Kevin McPhillips*
+
 *   Ensure hashes can be assigned to attributes created using `composed_of`.
     Fixes #25210.
 
