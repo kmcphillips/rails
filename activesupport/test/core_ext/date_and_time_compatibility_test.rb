@@ -45,6 +45,7 @@ class DateAndTimeCompatibilityTest < ActiveSupport::TestCase
         assert_instance_of Time, time
         assert_equal @utc_time, time.getutc
         assert_equal @utc_offset, time.utc_offset
+        assert_predicate time, :frozen?
       end
     end
   end
@@ -57,6 +58,7 @@ class DateAndTimeCompatibilityTest < ActiveSupport::TestCase
         assert_instance_of Time, time
         assert_equal @utc_time, time.getutc
         assert_equal @system_offset, time.utc_offset
+        assert_predicate time, :frozen?
       end
     end
   end
@@ -93,6 +95,7 @@ class DateAndTimeCompatibilityTest < ActiveSupport::TestCase
         assert_instance_of Time, time
         assert_equal @utc_time, time.getutc
         assert_equal @utc_offset, time.utc_offset
+        assert_predicate time, :frozen?
       end
     end
   end
@@ -105,6 +108,7 @@ class DateAndTimeCompatibilityTest < ActiveSupport::TestCase
         assert_instance_of Time, time
         assert_equal @utc_time, time.getutc
         assert_equal @system_offset, time.utc_offset
+        assert_predicate time, :frozen?
       end
     end
   end
@@ -158,6 +162,7 @@ class DateAndTimeCompatibilityTest < ActiveSupport::TestCase
         assert_equal @utc_time, time.getutc
         assert_instance_of Time, time.getutc
         assert_equal @utc_offset, time.utc_offset
+        assert_predicate time, :frozen?
 
         time = ActiveSupport::TimeWithZone.new(@date_time, @zone).freeze.to_time
 
@@ -165,6 +170,7 @@ class DateAndTimeCompatibilityTest < ActiveSupport::TestCase
         assert_equal @date_time, time.getutc
         assert_instance_of Time, time.getutc
         assert_equal @utc_offset, time.utc_offset
+        assert_predicate time, :frozen?
       end
     end
   end
@@ -178,6 +184,7 @@ class DateAndTimeCompatibilityTest < ActiveSupport::TestCase
         assert_equal @utc_time, time.getutc
         assert_instance_of Time, time.getutc
         assert_equal @system_offset, time.utc_offset
+        assert_predicate time, :frozen?
 
         time = ActiveSupport::TimeWithZone.new(@date_time, @zone).freeze.to_time
 
@@ -185,6 +192,7 @@ class DateAndTimeCompatibilityTest < ActiveSupport::TestCase
         assert_equal @date_time, time.getutc
         assert_instance_of Time, time.getutc
         assert_equal @system_offset, time.utc_offset
+        assert_predicate time, :frozen?
       end
     end
   end

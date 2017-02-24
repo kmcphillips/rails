@@ -12,7 +12,13 @@ module DateAndTime
     mattr_accessor(:preserve_timezone, instance_writer: false) { false }
 
     def to_time
-      preserve_timezone ? getlocal(utc_offset) : getlocal
+      new_time = if preserve_timezone
+        getlocal(utc_offset)
+      else
+        getlocal
+      end
+      new_time.freeze if frozen?
+      new_time
     end
   end
 end
