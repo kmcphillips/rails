@@ -37,6 +37,30 @@ class DateAndTimeCompatibilityTest < ActiveSupport::TestCase
     end
   end
 
+  def test_time_to_time_frozen_preserves_timezone
+    with_preserve_timezone(true) do
+      with_env_tz "US/Eastern" do
+        time = Time.new(2016, 4, 23, 15, 11, 12, 3600).freeze.to_time
+
+        assert_instance_of Time, time
+        assert_equal @utc_time, time.getutc
+        assert_equal @utc_offset, time.utc_offset
+      end
+    end
+  end
+
+  def test_time_to_time_frozen_does_not_preserve_time_zone
+    with_preserve_timezone(false) do
+      with_env_tz "US/Eastern" do
+        time = Time.new(2016, 4, 23, 15, 11, 12, 3600).freeze.to_time
+
+        assert_instance_of Time, time
+        assert_equal @utc_time, time.getutc
+        assert_equal @system_offset, time.utc_offset
+      end
+    end
+  end
+
   def test_datetime_to_time_preserves_timezone
     with_preserve_timezone(true) do
       with_env_tz "US/Eastern" do
@@ -53,6 +77,30 @@ class DateAndTimeCompatibilityTest < ActiveSupport::TestCase
     with_preserve_timezone(false) do
       with_env_tz "US/Eastern" do
         time = DateTime.new(2016, 4, 23, 15, 11, 12, Rational(1, 24)).to_time
+
+        assert_instance_of Time, time
+        assert_equal @utc_time, time.getutc
+        assert_equal @system_offset, time.utc_offset
+      end
+    end
+  end
+
+  def test_datetime_to_time_frozen_preserves_timezone
+    with_preserve_timezone(true) do
+      with_env_tz "US/Eastern" do
+        time = DateTime.new(2016, 4, 23, 15, 11, 12, Rational(1, 24)).freeze.to_time
+
+        assert_instance_of Time, time
+        assert_equal @utc_time, time.getutc
+        assert_equal @utc_offset, time.utc_offset
+      end
+    end
+  end
+
+  def test_datetime_to_time_frozen_does_not_preserve_time_zone
+    with_preserve_timezone(false) do
+      with_env_tz "US/Eastern" do
+        time = DateTime.new(2016, 4, 23, 15, 11, 12, Rational(1, 24)).freeze.to_time
 
         assert_instance_of Time, time
         assert_equal @utc_time, time.getutc
@@ -92,6 +140,46 @@ class DateAndTimeCompatibilityTest < ActiveSupport::TestCase
         assert_equal @system_offset, time.utc_offset
 
         time = ActiveSupport::TimeWithZone.new(@date_time, @zone).to_time
+
+        assert_instance_of Time, time
+        assert_equal @date_time, time.getutc
+        assert_instance_of Time, time.getutc
+        assert_equal @system_offset, time.utc_offset
+      end
+    end
+  end
+
+  def test_twz_to_time_frozen_preserves_timezone
+    with_preserve_timezone(true) do
+      with_env_tz "US/Eastern" do
+        time = ActiveSupport::TimeWithZone.new(@utc_time, @zone).freeze.to_time
+
+        assert_instance_of Time, time
+        assert_equal @utc_time, time.getutc
+        assert_instance_of Time, time.getutc
+        assert_equal @utc_offset, time.utc_offset
+
+        time = ActiveSupport::TimeWithZone.new(@date_time, @zone).freeze.to_time
+
+        assert_instance_of Time, time
+        assert_equal @date_time, time.getutc
+        assert_instance_of Time, time.getutc
+        assert_equal @utc_offset, time.utc_offset
+      end
+    end
+  end
+
+  def test_twz_to_time_frozen_does_not_preserve_time_zone
+    with_preserve_timezone(false) do
+      with_env_tz "US/Eastern" do
+        time = ActiveSupport::TimeWithZone.new(@utc_time, @zone).freeze.to_time
+
+        assert_instance_of Time, time
+        assert_equal @utc_time, time.getutc
+        assert_instance_of Time, time.getutc
+        assert_equal @system_offset, time.utc_offset
+
+        time = ActiveSupport::TimeWithZone.new(@date_time, @zone).freeze.to_time
 
         assert_instance_of Time, time
         assert_equal @date_time, time.getutc

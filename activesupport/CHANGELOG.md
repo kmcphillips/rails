@@ -1,5 +1,10 @@
 ## Rails 5.1.0.beta1 (February 23, 2017) ##
 
+*   Fixed bug in `DateAndTime::Compatibility#to_time` that caused it to
+    raise `RuntimeError: can't modify frozen Time` when called on any frozen `Time`.
+
+    *Kevin McPhillips*
+
 *   Cache `ActiveSupport::TimeWithZone#to_datetime` before freezing.
 
     *Adam Rice*
