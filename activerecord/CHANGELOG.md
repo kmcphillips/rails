@@ -1,3 +1,8 @@
+*   Update `Arel.sql()` to bypass quoting, allowing literals to be safely
+    passed into SQL fragments.
+
+    *Kevin McPhillips*
+
 *   Run transactional callbacks on the freshest instance to save a given 
     record within a transaction.
 

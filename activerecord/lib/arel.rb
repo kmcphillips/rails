@@ -32,11 +32,15 @@ module Arel
   #
   #   Post.order(Arel.sql("REPLACE(title, 'misc', 'zzzz') asc")).pluck(:id)
   #
+  # Wrap a known-save value to bypass sanitization, e.g.
+  #
+  #   Post.sanitize_sql_for_order([Arel.sql("field(id, ?)"), [Arel.sql(1)]])
+  #
   # Great caution should be taken to avoid SQL injection vulnerabilities.
   # This method should not be used with unsafe values such as request
   # parameters or model attributes.
-  def self.sql(raw_sql)
-    Arel::Nodes::SqlLiteral.new raw_sql
+  def self.sql(raw)
+    Arel::Nodes::SqlLiteral.new(raw)
   end
 
   def self.star # :nodoc:
