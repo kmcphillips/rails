@@ -113,7 +113,7 @@ module ActiveRecord
     initializer "active_record.validate_database_config" do |app|
       config.after_initialize do
         ActiveSupport.on_load(:active_record) do
-          ActiveRecord::Base.configurations.configurations.each(&:validate)
+          ActiveRecord::Base.configurations.configurations.each(&:validate!)
         end
       end
     end

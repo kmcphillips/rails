@@ -37,7 +37,7 @@ module Rails
           "#{missing_db} configured for '#{environment}'. Available configuration: #{configurations.inspect}"
       end
 
-      @db_config.validate
+      @db_config.validate!
 
       @db_config
     end

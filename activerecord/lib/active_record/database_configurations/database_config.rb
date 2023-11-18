@@ -22,7 +22,7 @@ module ActiveRecord
         adapter_class.new(configuration_hash)
       end
 
-      def validate
+      def validate!
         adapter_class if adapter
 
         true

@@ -148,10 +148,10 @@ module ActiveRecord
 
       def test_validate_checks_the_adapter_exists
         config = HashConfig.new("default_env", "primary", adapter: "abstract")
-        assert config.validate
+        assert config.validate!
         config = HashConfig.new("default_env", "primary", adapter: "potato")
         assert_raises(ActiveRecord::AdapterNotFound) do
-          config.validate
+          config.validate!
         end
       end
     end
