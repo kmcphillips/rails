@@ -13,15 +13,9 @@ module ActiveRecord
       #
       # == Example
       #
+      #   ActiveRecord::ConnectionAdapters.register("megadb", "MegaDB::ActiveRecordAdapter", "mega_db/active_record_adapter")
+      #
       #   ActiveRecord::ConnectionAdapters.register("mysql", "ActiveRecord::ConnectionAdapters::TrilogyAdapter", "active_record/connection_adapters/trilogy_adapter")
-      #
-      # Use the +:active_record_register_adapters+ hook to register custom adapters before database configs are loaded.
-      #
-      # == Example
-      #
-      #   ActiveSupport.on_load(:active_record_register_adapters) do
-      #     register("megadb", "MegaDB::ActiveRecordAdapter", "mega_db/active_record_adapter")
-      #   end
       #
       def register(name, class_name, path = class_name.underscore)
         @adapters[name.to_s] = [class_name, path]
@@ -72,8 +66,6 @@ module ActiveRecord
     register "mysql2", "ActiveRecord::ConnectionAdapters::Mysql2Adapter", "active_record/connection_adapters/mysql2_adapter"
     register "trilogy", "ActiveRecord::ConnectionAdapters::TrilogyAdapter", "active_record/connection_adapters/trilogy_adapter"
     register "postgresql", "ActiveRecord::ConnectionAdapters::PostgreSQLAdapter", "active_record/connection_adapters/postgresql_adapter"
-
-    ActiveSupport.run_load_hooks(:active_record_register_adapters, self)
 
     eager_autoload do
       autoload :AbstractAdapter

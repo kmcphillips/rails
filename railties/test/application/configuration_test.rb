@@ -4778,13 +4778,11 @@ module ApplicationTests
       YAML
 
       app_file "config/initializers/active_record_connection_adapters.rb", <<-RUBY
-        ActiveSupport.on_load(:active_record_register_adapters) do
-          register(
-            "potato",
-            "ActiveRecord::ConnectionAdapters::SQLite3Adapter",
-            "active_record/connection_adapters/sqlite3_adapter"
-          )
-        end
+        ActiveRecord::ConnectionAdapters.register(
+          "potato",
+          "ActiveRecord::ConnectionAdapters::SQLite3Adapter",
+          "active_record/connection_adapters/sqlite3_adapter"
+        )
       RUBY
 
       app "development"
