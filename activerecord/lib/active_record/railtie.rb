@@ -110,14 +110,6 @@ module ActiveRecord
       end
     end
 
-    initializer "active_record.validate_database_config" do |app|
-      config.after_initialize do
-        ActiveSupport.on_load(:active_record) do
-          ActiveRecord::Base.configurations.configurations.each(&:validate!)
-        end
-      end
-    end
-
     initializer "active_record.cache_versioning_support" do
       config.after_initialize do |app|
         ActiveSupport.on_load(:active_record) do
