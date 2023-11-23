@@ -116,6 +116,10 @@ module ActiveSupport
       "#<#{self.class.name} #{to_h.inspect}>"
     end
 
+    def key?(key)
+      super || @parent.key?(key)
+    end
+
     def inheritable_copy
       self.class.new(self)
     end
