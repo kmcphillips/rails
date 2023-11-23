@@ -193,4 +193,33 @@ class OrderedOptionsTest < ActiveSupport::TestCase
     assert_equal object, duplicate
     assert_not_equal object.object_id, duplicate.object_id
   end
+
+  def test_ordered_options_key
+    object = ActiveSupport::OrderedOptions.new
+    object.first = "first value"
+    object[:second] = "second value"
+    object["third"] = "third value"
+
+    assert object.key?(:first)
+    assert_not object.key?("first")
+    assert object.key?(:second)
+    assert_not object.key?("second")
+    assert object.key?(:third)
+    assert_not object.key?("third")
+    assert_not object.key?(:fourth)
+  end
+
+  def test_inheritable_options_key
+    object = ActiveSupport::InheritableOptions.new(first: "first value")
+    object[:second] = "second value"
+    object["third"] = "third value"
+
+    assert object.key?(:first)
+    assert_not object.key?("first")
+    assert object.key?(:second)
+    assert_not object.key?("second")
+    assert object.key?(:third)
+    assert_not object.key?("third")
+    assert_not object.key?(:fourth)
+  end
 end
