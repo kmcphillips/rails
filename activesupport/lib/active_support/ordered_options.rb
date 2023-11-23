@@ -92,14 +92,28 @@ module ActiveSupport
   #   h.boy  # => 'John'
   class InheritableOptions < OrderedOptions
     def initialize(parent = nil)
-      if parent.kind_of?(OrderedOptions)
+      @parent = parent
+      if @parent.kind_of?(OrderedOptions)
         # use the faster _get when dealing with OrderedOptions
-        super() { |h, k| parent._get(k) }
-      elsif parent
-        super() { |h, k| parent[k] }
+        super() { |h, k| @parent._get(k) }
+      elsif @parent
+        super() { |h, k| @parent[k] }
       else
         super()
+        @parent = {}
       end
+    end
+
+    def to_h
+      @parent.dup.merge(self)
+    end
+
+    def ==(other)
+      to_h == other.to_h
+    end
+
+    def inspect
+      "#<#{self.class.name} #{to_h.inspect}>"
     end
 
     def inheritable_copy
