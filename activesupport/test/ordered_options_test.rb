@@ -134,7 +134,7 @@ class OrderedOptionsTest < ActiveSupport::TestCase
     assert_raises(KeyError) { a.non_existing_key! }
   end
 
-  def test_inspect
+  def test_ordered_option_inspect
     a = ActiveSupport::OrderedOptions.new
     assert_equal "#<ActiveSupport::OrderedOptions {}>", a.inspect
 
@@ -142,5 +142,55 @@ class OrderedOptionsTest < ActiveSupport::TestCase
     a[:baz] = :quz
 
     assert_equal "#<ActiveSupport::OrderedOptions {:foo=>:bar, :baz=>:quz}>", a.inspect
+  end
+
+  def test_inheritable_option_inspect
+    object = ActiveSupport::InheritableOptions.new(first: "first value")
+    assert_equal "#<ActiveSupport::InheritableOptions {:first=>\"first value\"}>", object.inspect
+
+    object[:second] = "second value"
+    object["third"] = "third value"
+    assert_equal "#<ActiveSupport::InheritableOptions {:first=>\"first value\", :second=>\"second value\", :third=>\"third value\"}>", object.inspect
+  end
+
+  def test_ordered_options_to_h
+    object = ActiveSupport::OrderedOptions.new
+    assert_equal({}, object.to_h)
+    object.first = "first value"
+    object[:second] = "second value"
+    object["third"] = "third value"
+
+    assert_equal({ first: "first value", second: "second value", third: "third value" }, object.to_h)
+  end
+
+  def test_inheritable_options_to_h
+    object = ActiveSupport::InheritableOptions.new(first: "first value")
+    assert_equal({ first: "first value" }, object.to_h)
+
+    object[:second] = "second value"
+    object["third"] = "third value"
+
+    assert_equal({ first: "first value", second: "second value", third: "third value" }, object.to_h)
+  end
+
+  def test_ordered_options_dup
+    object = ActiveSupport::OrderedOptions.new
+    object.first = "first value"
+    object[:second] = "second value"
+    object["third"] = "third value"
+
+    duplicate = object.dup
+    assert_equal object, duplicate
+    assert_not_equal object.object_id, duplicate.object_id
+  end
+
+  def test_inheritable_options_dup
+    object = ActiveSupport::InheritableOptions.new(first: "first value")
+    object[:second] = "second value"
+    object["third"] = "third value"
+
+    duplicate = object.dup
+    assert_equal object, duplicate
+    assert_not_equal object.object_id, duplicate.object_id
   end
 end
