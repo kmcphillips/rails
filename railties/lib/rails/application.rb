@@ -66,7 +66,6 @@ module Rails
     autoload :Finisher,               "rails/application/finisher"
     autoload :Railties,               "rails/engine/railties"
     autoload :RoutesReloader,         "rails/application/routes_reloader"
-    autoload :CredentialsConfig,      "rails/application/credentials_config"
 
     class << self
       def inherited(base)

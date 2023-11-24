@@ -75,7 +75,7 @@ module Rails
         @content_security_policy_nonce_directives = nil
         @require_master_key                      = false
         @loaded_config_version                   = nil
-        @credentials                             = CredentialsConfig.new(self)
+        @credentials                             = ActiveSupport::InheritableOptions.new(credentials_defaults)
         @disable_sandbox                         = false
         @sandbox_by_default                      = false
         @add_autoload_paths_to_load_path         = true
@@ -580,6 +580,17 @@ module Rails
           true
         end
       end
+
+      private
+        def credentials_defaults
+          content_path = root.join("config/credentials/#{Rails.env}.yml.enc")
+          content_path = root.join("config/credentials.yml.enc") if !content_path.exist?
+
+          key_path = root.join("config/credentials/#{Rails.env}.key")
+          key_path = root.join("config/master.key") if !key_path.exist?
+
+          { content_path: content_path, key_path: key_path }
+        end
     end
   end
 end
