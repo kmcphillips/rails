@@ -145,39 +145,39 @@ class OrderedOptionsTest < ActiveSupport::TestCase
   end
 
   def test_inheritable_option_inspect
-    object = ActiveSupport::InheritableOptions.new(first: "first value")
-    assert_equal "#<ActiveSupport::InheritableOptions {:first=>\"first value\"}>", object.inspect
+    object = ActiveSupport::InheritableOptions.new(one: "first value")
+    assert_equal "#<ActiveSupport::InheritableOptions {:one=>\"first value\"}>", object.inspect
 
-    object[:second] = "second value"
-    object["third"] = "third value"
-    assert_equal "#<ActiveSupport::InheritableOptions {:first=>\"first value\", :second=>\"second value\", :third=>\"third value\"}>", object.inspect
+    object[:two] = "second value"
+    object["three"] = "third value"
+    assert_equal "#<ActiveSupport::InheritableOptions {:one=>\"first value\", :two=>\"second value\", :three=>\"third value\"}>", object.inspect
   end
 
   def test_ordered_options_to_h
     object = ActiveSupport::OrderedOptions.new
     assert_equal({}, object.to_h)
-    object.first = "first value"
-    object[:second] = "second value"
-    object["third"] = "third value"
+    object.one = "first value"
+    object[:two] = "second value"
+    object["three"] = "third value"
 
-    assert_equal({ first: "first value", second: "second value", third: "third value" }, object.to_h)
+    assert_equal({ one: "first value", two: "second value", three: "third value" }, object.to_h)
   end
 
   def test_inheritable_options_to_h
-    object = ActiveSupport::InheritableOptions.new(first: "first value")
-    assert_equal({ first: "first value" }, object.to_h)
+    object = ActiveSupport::InheritableOptions.new(one: "first value")
+    assert_equal({ one: "first value" }, object.to_h)
 
-    object[:second] = "second value"
-    object["third"] = "third value"
+    object[:two] = "second value"
+    object["three"] = "third value"
 
-    assert_equal({ first: "first value", second: "second value", third: "third value" }, object.to_h)
+    assert_equal({ one: "first value", two: "second value", three: "third value" }, object.to_h)
   end
 
   def test_ordered_options_dup
     object = ActiveSupport::OrderedOptions.new
-    object.first = "first value"
-    object[:second] = "second value"
-    object["third"] = "third value"
+    object.one = "first value"
+    object[:two] = "second value"
+    object["three"] = "third value"
 
     duplicate = object.dup
     assert_equal object, duplicate
@@ -185,9 +185,9 @@ class OrderedOptionsTest < ActiveSupport::TestCase
   end
 
   def test_inheritable_options_dup
-    object = ActiveSupport::InheritableOptions.new(first: "first value")
-    object[:second] = "second value"
-    object["third"] = "third value"
+    object = ActiveSupport::InheritableOptions.new(one: "first value")
+    object[:two] = "second value"
+    object["three"] = "third value"
 
     duplicate = object.dup
     assert_equal object, duplicate
@@ -196,30 +196,30 @@ class OrderedOptionsTest < ActiveSupport::TestCase
 
   def test_ordered_options_key
     object = ActiveSupport::OrderedOptions.new
-    object.first = "first value"
-    object[:second] = "second value"
-    object["third"] = "third value"
+    object.one = "first value"
+    object[:two] = "second value"
+    object["three"] = "third value"
 
-    assert object.key?(:first)
-    assert_not object.key?("first")
-    assert object.key?(:second)
-    assert_not object.key?("second")
-    assert object.key?(:third)
-    assert_not object.key?("third")
-    assert_not object.key?(:fourth)
+    assert object.key?(:one)
+    assert_not object.key?("one")
+    assert object.key?(:two)
+    assert_not object.key?("two")
+    assert object.key?(:three)
+    assert_not object.key?("three")
+    assert_not object.key?(:four)
   end
 
   def test_inheritable_options_key
-    object = ActiveSupport::InheritableOptions.new(first: "first value")
-    object[:second] = "second value"
-    object["third"] = "third value"
+    object = ActiveSupport::InheritableOptions.new(one: "first value")
+    object[:two] = "second value"
+    object["three"] = "third value"
 
-    assert object.key?(:first)
-    assert_not object.key?("first")
-    assert object.key?(:second)
-    assert_not object.key?("second")
-    assert object.key?(:third)
-    assert_not object.key?("third")
-    assert_not object.key?(:fourth)
+    assert object.key?(:one)
+    assert_not object.key?("one")
+    assert object.key?(:two)
+    assert_not object.key?("two")
+    assert object.key?(:three)
+    assert_not object.key?("three")
+    assert_not object.key?(:four)
   end
 end
