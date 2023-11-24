@@ -120,6 +120,10 @@ module ActiveSupport
       super || @parent.key?(key)
     end
 
+    def overridden?(key)
+      @parent.key?(key) && keys.include?(key.to_sym)
+    end
+
     def inheritable_copy
       self.class.new(self)
     end

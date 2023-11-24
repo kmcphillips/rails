@@ -222,4 +222,17 @@ class OrderedOptionsTest < ActiveSupport::TestCase
     assert_not object.key?("three")
     assert_not object.key?(:four)
   end
+
+  def test_inheritable_options_overridden
+    object = ActiveSupport::InheritableOptions.new(one: "first value", two: "second value", three: "third value")
+    object["one"] = "first value override"
+    object[:two] = "second value override"
+
+    assert object.overridden?(:one)
+    assert_equal "first value override", object.one
+    assert object.overridden?(:two)
+    assert_equal "second value override", object.two
+    assert_not object.overridden?(:three)
+    assert_equal "third value", object.three
+  end
 end
