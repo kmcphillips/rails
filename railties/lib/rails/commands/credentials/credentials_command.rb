@@ -20,8 +20,8 @@ module Rails
         load_generators
 
         if environment_specified?
-          @content_path = "config/credentials/#{environment}.yml.enc" unless config.key?(:content_path)
-          @key_path = "config/credentials/#{environment}.key" unless config.key?(:key_path)
+          @content_path = "config/credentials/#{environment}.yml.enc" if config.content_path_default?
+          @key_path = "config/credentials/#{environment}.key" if config.key_path_default?
         end
 
         ensure_encryption_key_has_been_added
