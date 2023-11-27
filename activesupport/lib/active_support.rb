@@ -77,6 +77,7 @@ module ActiveSupport
     autoload :NumberHelper
     autoload :OptionMerger
     autoload :OrderedHash
+    autoload :Options
     autoload :OrderedOptions
     autoload :StringInquirer
     autoload :EnvironmentInquirer
