@@ -246,4 +246,36 @@ class OrderedOptionsTest < ActiveSupport::TestCase
     assert_not object.overridden?(:two)
     assert_equal "second value override", object.two
   end
+
+  def test_inheritable_options_each
+    object = ActiveSupport::InheritableOptions.new(one: "first value", two: "second value")
+    object["one"] = "first value override"
+    object[:three] = "third value"
+
+    count = 0
+    keys = []
+    object.each do |key, value|
+      count += 1
+      keys << key
+    end
+    assert_equal 3, count
+    assert_equal [:one, :two, :three], keys
+  end
+
+  def test_inheritable_options_to_a
+    object = ActiveSupport::InheritableOptions.new(one: "first value", two: "second value")
+    object["one"] = "first value override"
+    object[:three] = "third value"
+
+    assert_equal [[:one, "first value override"], [:two, "second value"], [:three, "third value"]], object.entries
+    assert_equal [[:one, "first value override"], [:two, "second value"], [:three, "third value"]], object.to_a
+  end
+
+  def test_inheritable_options_count
+    object = ActiveSupport::InheritableOptions.new(one: "first value", two: "second value")
+    object["one"] = "first value override"
+    object[:three] = "third value"
+
+    assert_equal 3, object.count
+  end
 end

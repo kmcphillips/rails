@@ -127,5 +127,13 @@ module ActiveSupport
     def inheritable_copy
       self.class.new(self)
     end
+
+    def to_a
+      entries
+    end
+
+    def each(&block)
+      to_h.each(&block)
+    end
   end
 end
