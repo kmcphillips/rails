@@ -93,47 +93,16 @@ module ActiveSupport
   class InheritableOptions < OrderedOptions
     def initialize(parent = nil)
       @parent = parent
-      if @parent.kind_of?(OrderedOptions)
-        # use the faster _get when dealing with OrderedOptions
-        super() { |h, k| @parent._get(k) }
-      elsif @parent
-        super() { |h, k| @parent[k] }
-      else
-        super()
-        @parent = {}
-      end
-    end
-
-    def to_h
-      @parent.dup.merge(self)
-    end
-
-    def ==(other)
-      to_h == other.to_h
-    end
-
-    def inspect
-      "#<#{self.class.name} #{to_h.inspect}>"
-    end
-
-    def key?(key)
-      super || @parent.key?(key)
+      update(@parent.symbolize_keys) if @parent
+      super()
     end
 
     def overridden?(key)
-      !!(@parent && @parent.key?(key) && keys.include?(key.to_sym))
+      !!(@parent && @parent.key?(key) && @parent[key] != self[key])
     end
 
     def inheritable_copy
       self.class.new(self)
-    end
-
-    def to_a
-      entries
-    end
-
-    def each(&block)
-      to_h.each(&block)
     end
   end
 end
