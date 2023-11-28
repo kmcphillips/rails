@@ -91,11 +91,27 @@ class OrderedOptionsTest < ActiveSupport::TestCase
   end
 
   def test_inheritable_options_inheritable_copy
-    original = ActiveSupport::InheritableOptions.new
-    copy     = original.inheritable_copy
+    parent = { one: "first", two: "second", three: "third" }
+    original = ActiveSupport::InheritableOptions.new(parent)
+    original[:two] = "second override"
+    original[:four] = "fourth"
+    copy = original.inheritable_copy
 
-    assert copy.kind_of?(original.class)
+    assert copy.kind_of?(ActiveSupport::InheritableOptions)
     assert_not_equal copy.object_id, original.object_id
+    assert_equal "first", copy[:one]
+    assert_equal "second override", copy[:two]
+    assert_equal "third", copy[:three]
+    assert_equal "fourth", copy[:four]
+    assert_equal "first", copy.one
+    assert_equal "second override", copy.two
+    assert_equal "third", copy.three
+    assert_equal "fourth", copy.four
+
+    parent[:one] = "first override"
+
+    assert_equal "first", copy[:one]
+    assert_equal "first", copy.one
   end
 
   def test_introspection

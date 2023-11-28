@@ -750,38 +750,38 @@ class RespondToControllerTest < ActionController::TestCase
 
   def test_variant_without_implicit_rendering_from_xhr
     logger = ActiveSupport::LogSubscriber::TestHelper::MockLogger.new
-    old_logger, ActionController::Base.logger = ActionController::Base.logger, logger
+    old_logger, self.class.controller_class.config.logger = self.class.controller_class.config.logger, logger
 
     get :variant_without_implicit_template_rendering, xhr: true, params: { v: :does_not_matter }
     assert_response :no_content
 
     assert_equal 1, logger.logged(:info).select { |s| s == NO_CONTENT_WARNING }.size, "Implicit head :no_content not logged"
   ensure
-    ActionController::Base.logger = old_logger
+    self.class.controller_class.config.logger = old_logger
   end
 
   def test_variant_without_implicit_rendering_from_api
     logger = ActiveSupport::LogSubscriber::TestHelper::MockLogger.new
-    old_logger, ActionController::Base.logger = ActionController::Base.logger, logger
+    old_logger, self.class.controller_class.config.logger = self.class.controller_class.config.logger, logger
 
     get :variant_without_implicit_template_rendering, format: "json", params: { v: :does_not_matter }
     assert_response :no_content
 
     assert_equal 1, logger.logged(:info).select { |s| s == NO_CONTENT_WARNING }.size, "Implicit head :no_content not logged"
   ensure
-    ActionController::Base.logger = old_logger
+    self.class.controller_class.config.logger = old_logger
   end
 
   def test_variant_variant_not_set_and_without_implicit_rendering_from_xhr
     logger = ActiveSupport::LogSubscriber::TestHelper::MockLogger.new
-    old_logger, ActionController::Base.logger = ActionController::Base.logger, logger
+    old_logger, self.class.controller_class.config.logger = self.class.controller_class.config.logger, logger
 
     get :variant_without_implicit_template_rendering, xhr: true
     assert_response :no_content
 
     assert_equal 1, logger.logged(:info).select { |s| s == NO_CONTENT_WARNING }.size, "Implicit head :no_content not logged"
   ensure
-    ActionController::Base.logger = old_logger
+    self.class.controller_class.config.logger = old_logger
   end
 
   def test_variant_with_format_and_custom_render

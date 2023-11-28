@@ -243,12 +243,12 @@ end
 module RequestForgeryProtectionTests
   def setup
     @token = Base64.urlsafe_encode64("railstestrailstestrailstestrails")
-    @old_request_forgery_protection_token = ActionController::Base.request_forgery_protection_token
-    ActionController::Base.request_forgery_protection_token = :custom_authenticity_token
+    @old_request_forgery_protection_token = self.class.controller_class.config.request_forgery_protection_token
+    self.class.controller_class.config.request_forgery_protection_token = :custom_authenticity_token
   end
 
   def teardown
-    ActionController::Base.request_forgery_protection_token = @old_request_forgery_protection_token
+    self.class.controller_class.config.request_forgery_protection_token = @old_request_forgery_protection_token
   end
 
   def test_should_render_form_with_token_tag
@@ -535,57 +535,43 @@ module RequestForgeryProtectionTests
   end
 
   def test_should_block_post_with_origin_checking_and_wrong_origin
-    old_logger = ActionController::Base.logger
-    logger = ActiveSupport::LogSubscriber::TestHelper::MockLogger.new
-    ActionController::Base.logger = logger
-
-    forgery_protection_origin_check do
-      initialize_csrf_token
-      @controller.stub :form_authenticity_token, @token do
-        assert_blocked do
-          @request.set_header "HTTP_ORIGIN", "http://bad.host"
-          post :index, params: { custom_authenticity_token: @token }
+    with_mock_logger do |logger|
+      forgery_protection_origin_check do
+        initialize_csrf_token
+        @controller.stub :form_authenticity_token, @token do
+          assert_blocked do
+            @request.set_header "HTTP_ORIGIN", "http://bad.host"
+            post :index, params: { custom_authenticity_token: @token }
+          end
         end
       end
-    end
 
-    assert_match(
-      "HTTP Origin header (http://bad.host) didn't match request.base_url (http://test.host)",
-      logger.logged(:warn).last
-    )
-  ensure
-    ActionController::Base.logger = old_logger
+      assert_match(
+        "HTTP Origin header (http://bad.host) didn't match request.base_url (http://test.host)",
+        logger.logged(:warn).last
+      )
+    end
   end
 
 
   def test_should_warn_on_missing_csrf_token
-    old_logger = ActionController::Base.logger
-    logger = ActiveSupport::LogSubscriber::TestHelper::MockLogger.new
-    ActionController::Base.logger = logger
-
-    begin
+    with_mock_logger do |logger|
       assert_blocked { post :index }
 
       assert_equal 1, logger.logged(:warn).size
       assert_match(/CSRF token authenticity/, logger.logged(:warn).last)
-    ensure
-      ActionController::Base.logger = old_logger
     end
   end
 
   def test_should_not_warn_if_csrf_logging_disabled
-    old_logger = ActionController::Base.logger
-    logger = ActiveSupport::LogSubscriber::TestHelper::MockLogger.new
-    ActionController::Base.logger = logger
-    ActionController::Base.log_warning_on_csrf_failure = false
+    self.class.controller_class.config.log_warning_on_csrf_failure = false
 
-    begin
+    with_mock_logger do |logger|
       assert_blocked { post :index }
 
       assert_equal 0, logger.logged(:warn).size
     ensure
-      ActionController::Base.logger = old_logger
-      ActionController::Base.log_warning_on_csrf_failure = true
+      self.class.controller_class.config.log_warning_on_csrf_failure = true
     end
   end
 
@@ -611,33 +597,23 @@ module RequestForgeryProtectionTests
   end
 
   def test_should_warn_on_not_same_origin_js
-    old_logger = ActionController::Base.logger
-    logger = ActiveSupport::LogSubscriber::TestHelper::MockLogger.new
-    ActionController::Base.logger = logger
-
-    begin
+    with_mock_logger do |logger|
       assert_cross_origin_blocked { get :same_origin_js }
 
       assert_equal 1, logger.logged(:warn).size
       assert_match(/<script> tag on another site requested protected JavaScript/, logger.logged(:warn).last)
-    ensure
-      ActionController::Base.logger = old_logger
     end
   end
 
   def test_should_not_warn_if_csrf_logging_disabled_and_not_same_origin_js
-    old_logger = ActionController::Base.logger
-    logger = ActiveSupport::LogSubscriber::TestHelper::MockLogger.new
-    ActionController::Base.logger = logger
-    ActionController::Base.log_warning_on_csrf_failure = false
+    self.class.controller_class.config.log_warning_on_csrf_failure = false
 
-    begin
+    with_mock_logger do |logger|
       assert_cross_origin_blocked { get :same_origin_js }
 
       assert_equal 0, logger.logged(:warn).size
     ensure
-      ActionController::Base.logger = old_logger
-      ActionController::Base.log_warning_on_csrf_failure = true
+      self.class.controller_class.config.log_warning_on_csrf_failure = true
     end
   end
 
@@ -710,12 +686,23 @@ module RequestForgeryProtectionTests
   end
 
   def forgery_protection_origin_check
-    old_setting = ActionController::Base.forgery_protection_origin_check
-    ActionController::Base.forgery_protection_origin_check = true
+    old_setting = self.class.controller_class.config.forgery_protection_origin_check
+    self.class.controller_class.config.forgery_protection_origin_check = true
     begin
       yield
     ensure
-      ActionController::Base.forgery_protection_origin_check = old_setting
+      self.class.controller_class.config.forgery_protection_origin_check = old_setting
+    end
+  end
+
+  def with_mock_logger(&block)
+    old_logger = self.class.controller_class.config.logger
+    logger = ActiveSupport::LogSubscriber::TestHelper::MockLogger.new
+    self.class.controller_class.config.logger = logger
+    begin
+      yield(logger)
+    ensure
+      self.class.controller_class.config.logger = old_logger
     end
   end
 end
@@ -871,50 +858,49 @@ end
 class CustomAuthenticityParamControllerTest < ActionController::TestCase
   def setup
     super
-    @old_logger = ActionController::Base.logger
+    @old_logger = self.class.controller_class.config.logger
     @logger = ActiveSupport::LogSubscriber::TestHelper::MockLogger.new
     @token = Base64.urlsafe_encode64(SecureRandom.random_bytes(32))
-    @old_request_forgery_protection_token = ActionController::Base.request_forgery_protection_token
-    ActionController::Base.request_forgery_protection_token = @token
+    @old_request_forgery_protection_token = self.class.controller_class.config.request_forgery_protection_token
+    self.class.controller_class.config.request_forgery_protection_token = :custom_authenticity_token
   end
 
   def teardown
-    ActionController::Base.request_forgery_protection_token = @old_request_forgery_protection_token
+    self.class.controller_class.config.request_forgery_protection_token = @old_request_forgery_protection_token
     super
   end
 
   def test_should_not_warn_if_form_authenticity_param_matches_form_authenticity_token
-    ActionController::Base.logger = @logger
+    self.class.controller_class.config.logger = @logger
     begin
       @controller.stub :valid_authenticity_token?, :true do
         post :index, params: { custom_token_name: "foobar" }
         assert_equal 0, @logger.logged(:warn).size
       end
     ensure
-      ActionController::Base.logger = @old_logger
+      self.class.controller_class.config.logger = @old_logger
     end
   end
 
   def test_should_warn_if_form_authenticity_param_does_not_match_form_authenticity_token
-    ActionController::Base.logger = @logger
-
+    self.class.controller_class.config.logger = @logger
     begin
       post :index, params: { custom_token_name: "bazqux" }
       assert_equal 1, @logger.logged(:warn).size
     ensure
-      ActionController::Base.logger = @old_logger
+      self.class.controller_class.config.logger = @old_logger
     end
   end
 end
 
 class PerFormTokensControllerTest < ActionController::TestCase
   def setup
-    @old_request_forgery_protection_token = ActionController::Base.request_forgery_protection_token
-    ActionController::Base.request_forgery_protection_token = :custom_authenticity_token
+    @old_request_forgery_protection_token = self.class.controller_class.config.request_forgery_protection_token
+    self.class.controller_class.config.request_forgery_protection_token = :custom_authenticity_token
   end
 
   def teardown
-    ActionController::Base.request_forgery_protection_token = @old_request_forgery_protection_token
+    self.class.controller_class.config.request_forgery_protection_token = @old_request_forgery_protection_token
   end
 
   def test_per_form_token_is_same_size_as_global_token
